@@ -62,7 +62,7 @@ public class LeaderBoardBrain : MonoBehaviour
             scoresToShow = scoresToShow.OrderBy(x => x.time).ToArray();
 
             int points_;
-            for (int i = 0; i < 15; i++)
+            for (int i = 0; i < boradText.childCount; i++)
             {
                 if (i < scoresToShow.Length)
                 {
