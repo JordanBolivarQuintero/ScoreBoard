@@ -18,14 +18,17 @@ public class LeaderBoardBrain : MonoBehaviour
 
     [Header("Text fields")]
     [SerializeField] Transform boradText;
+    [SerializeField] TMP_InputField groupText;
 
     [Header("")]
     [SerializeField] string URL;
 
-    private void Start()
+    public void SearchButton()
     {
-        StartCoroutine(GetUsers());
+        int group_ = int.Parse(groupText.text);
+        StartCoroutine(GetUsers(group_));
     }
+
     float TimeToPoints(float time)
     {
         float points;
@@ -39,7 +42,7 @@ public class LeaderBoardBrain : MonoBehaviour
         return points;
     }
     
-    IEnumerator GetUsers()
+    IEnumerator GetUsers(int group_)
     {
         string url = URL + "/scores";
         UnityWebRequest www = UnityWebRequest.Get(url);
@@ -54,7 +57,9 @@ public class LeaderBoardBrain : MonoBehaviour
         {
             //Debug.Log(www.downloadHandler.text);
             Scores resData = JsonUtility.FromJson<Scores>(www.downloadHandler.text);
-            scoresToShow = resData.users.OrderBy(x => x.time).ToArray();
+
+            scoresToShow = resData.users.Where(x => x.group == group_).ToArray();
+            scoresToShow = scoresToShow.OrderBy(x => x.time).ToArray();
 
             int points_;
             for (int i = 0; i < 3; i++)
@@ -78,6 +83,7 @@ public class User
 {
     public string name;
     public int id;
+    public int group;
     public string email;
     public float time;
 }
