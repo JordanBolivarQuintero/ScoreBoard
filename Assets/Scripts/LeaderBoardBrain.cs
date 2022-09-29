@@ -69,9 +69,9 @@ public class LeaderBoardBrain : MonoBehaviour
                     points_ = (int)TimeToPoints(scoresToShow[i].time);
                     //Debug.Log(scoresToShow[i].name + " | " + points_);
 
-                    boradText.GetChild(i).GetChild(0).GetComponent<TMP_Text>().text = (i + 1).ToString();
+                    boradText.GetChild(i).GetChild(0).GetComponent<TMP_Text>().text = (i + 1).ToString() + ".";
                     boradText.GetChild(i).GetChild(1).GetComponent<TMP_Text>().text = scoresToShow[i].name;
-                    boradText.GetChild(i).GetChild(2).GetComponent<TMP_Text>().text = scoresToShow[i].id.ToString();
+                    boradText.GetChild(i).GetChild(2).GetComponent<TMP_Text>().text = "#" + scoresToShow[i].id.ToString();
                     boradText.GetChild(i).GetChild(3).GetComponent<TMP_Text>().text = points_.ToString();
                 }
                 else
