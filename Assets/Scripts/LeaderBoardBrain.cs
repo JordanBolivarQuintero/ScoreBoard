@@ -18,11 +18,13 @@ public class LeaderBoardBrain : MonoBehaviour
 
     [Header("Text fields")]
     [SerializeField] Transform boradText;
+    [SerializeField] GameObject medals;
     [SerializeField] TMP_InputField groupText;
     [SerializeField] TMP_InputField URLText;
 
     [Header("")]
     [SerializeField] string URL;
+    [SerializeField] string fakeAPI;
 
     public void SearchButton()
     {
@@ -32,6 +34,10 @@ public class LeaderBoardBrain : MonoBehaviour
     public void ChangeButton()
     {
         URL = URLText.text;
+    }
+    public void ReturnToFakeAPI()
+    {
+        URL = fakeAPI;
     }
 
     float TimeToPoints(float time)
@@ -65,6 +71,13 @@ public class LeaderBoardBrain : MonoBehaviour
 
             scoresToShow = resData.users.Where(x => x.group == group_).ToArray();
             scoresToShow = scoresToShow.OrderBy(x => x.time).ToArray();
+
+            if (scoresToShow == null || scoresToShow.Length < 1)
+            {
+                medals.SetActive(false);
+            }
+            else
+                medals.SetActive(true);
 
             int points_;
             for (int i = 0; i < boradText.childCount; i++)
