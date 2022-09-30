@@ -19,6 +19,7 @@ public class LeaderBoardBrain : MonoBehaviour
     [Header("Text fields")]
     [SerializeField] Transform boradText;
     [SerializeField] TMP_InputField groupText;
+    [SerializeField] TMP_InputField URLText;
 
     [Header("")]
     [SerializeField] string URL;
@@ -27,6 +28,10 @@ public class LeaderBoardBrain : MonoBehaviour
     {
         int group_ = int.Parse(groupText.text);
         StartCoroutine(GetUsers(group_));
+    }
+    public void ChangeButton()
+    {
+        URL = URLText.text;
     }
 
     float TimeToPoints(float time)
@@ -95,7 +100,7 @@ public class LeaderBoardBrain : MonoBehaviour
 public class User
 {
     public string name;
-    public int id;
+    public string id;
     public int group;
     public string email;
     public float time;
