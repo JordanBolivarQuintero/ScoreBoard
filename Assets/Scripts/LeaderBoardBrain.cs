@@ -4,11 +4,10 @@ using UnityEngine;
 using UnityEngine.Networking;
 using System.Linq;
 using TMPro;
+using HtmlAgilityPack;
 
 public class LeaderBoardBrain : MonoBehaviour
 {
-    User[] scoresToShow;
-
     [Header("Reference Values")]
     [SerializeField] float minV = 2.78f;//m/s
     [SerializeField] float maxV = 12.5f;//m/s
@@ -20,12 +19,96 @@ public class LeaderBoardBrain : MonoBehaviour
     [SerializeField] Transform boradText;
     [SerializeField] GameObject medals;
     [SerializeField] TMP_InputField groupText;
-    [SerializeField] TMP_InputField URLText;
 
     [Header("")]
-    [SerializeField] string URL;
-    [SerializeField] string fakeAPI;
+    string URL = "https://cy2brmczxr.us-east-1.awsapprunner.com/ranking/";
+    public List<User> users;
 
+    //try
+    private void Start()
+    {
+        users = new List<User>();
+        ShowScores(users);
+    }
+    public void SearchButton()
+    {
+        int group_ = int.Parse(groupText.text);
+        users = GetData(group_);
+        ShowScores(users);
+    }
+    List<User> GetData(int round)
+    {
+        HtmlDocument document;
+        HtmlWeb web = new HtmlWeb();
+        List<User> scores = new List<User>();
+
+        document = web.Load(URL + round);// + round.ToString());
+
+        for (int i = 1; i <= 20; i++)
+        {
+            try
+            {
+                User user = new User();
+
+                user.name = document.DocumentNode.SelectNodes("//table/tbody/tr[" + i + "]/td[1]").First().InnerText;
+                user.id = document.DocumentNode.SelectNodes("//table/tbody/tr[" + i + "]/td[2]").First().InnerText;
+                user.email = document.DocumentNode.SelectNodes("//table/tbody/tr[" + i + "]/td[3]").First().InnerText;
+                user.group = document.DocumentNode.SelectNodes("//table/tbody/tr[" + i + "]/td[4]").First().InnerText;              
+                user.time = document.DocumentNode.SelectNodes("//table/tbody/tr[" + i + "]/td[5]").First().InnerText;
+
+                scores.Add(user);
+                /*
+                Debug.Log(user.name);
+                Debug.Log(user.id);
+                Debug.Log(user.email);
+                Debug.Log(user.group);
+                Debug.Log(user.time);
+                print("------------------------");*/
+            }
+            catch (System.Exception)
+            {
+                break;
+            }           
+        }
+        return scores;
+    }
+    float TimeToPoints(float time)
+    {
+        float points;
+        float Vel = trackMeters / time;
+
+        if (Vel > minV)
+            points = (((Vel - minV) * (maxP - minP)) / (maxV - minV)) + minP;
+        else
+            points = (Vel * minP) / minV;
+
+        return points;
+    }
+    void ShowScores(List<User> users_)
+    {
+        //int points_;
+        for (int i = 0; i < boradText.childCount; i++)
+        {
+            if (i < users_.Count)
+            {
+                //points_ = (int)TimeToPoints(i < scores.users.time);
+                //Debug.Log(scoresToShow[i].name + " | " + points_);
+
+                boradText.GetChild(i).GetChild(0).GetComponent<TMP_Text>().text = (i + 1).ToString() + ".";
+                boradText.GetChild(i).GetChild(1).GetComponent<TMP_Text>().text = users_[i].name;
+                boradText.GetChild(i).GetChild(2).GetComponent<TMP_Text>().text = "#" + users_[i].id;
+                boradText.GetChild(i).GetChild(3).GetComponent<TMP_Text>().text = users_[i].time;
+            }
+            else
+            {
+                boradText.GetChild(i).GetChild(0).GetComponent<TMP_Text>().text = (i + 1).ToString() + "."; ;
+                boradText.GetChild(i).GetChild(1).GetComponent<TMP_Text>().text = "----";
+                boradText.GetChild(i).GetChild(2).GetComponent<TMP_Text>().text = "-";
+                boradText.GetChild(i).GetChild(3).GetComponent<TMP_Text>().text = "-";
+            }
+        }
+    }
+    /*
     public void SearchButton()
     {
         int group_ = int.Parse(groupText.text);
@@ -37,20 +120,7 @@ public class LeaderBoardBrain : MonoBehaviour
     }
     public void ReturnToFakeAPI()
     {
-        URL = fakeAPI;
-    }
-
-    float TimeToPoints(float time)
-    {
-        float points;
-        float Vel = trackMeters/time;
-
-        if (Vel > minV)
-            points = (((Vel - minV) * (maxP - minP)) / (maxV - minV)) + minP;
-        else
-            points = (Vel * minP) / minV;
-
-        return points;
+        //URL = fakeAPI;
     }
     
     IEnumerator GetUsers(int group_)
@@ -94,10 +164,10 @@ public class LeaderBoardBrain : MonoBehaviour
                 }
                 else
                 {
-                    boradText.GetChild(i).GetChild(0).GetComponent<TMP_Text>().text = "";
-                    boradText.GetChild(i).GetChild(1).GetComponent<TMP_Text>().text = "";
-                    boradText.GetChild(i).GetChild(2).GetComponent<TMP_Text>().text = "";
-                    boradText.GetChild(i).GetChild(3).GetComponent<TMP_Text>().text = "";
+                    boradText.GetChild(i).GetChild(0).GetComponent<TMP_Text>().text = (i + 1).ToString() + "."; ;
+                    boradText.GetChild(i).GetChild(1).GetComponent<TMP_Text>().text = "xxxx";
+                    boradText.GetChild(i).GetChild(2).GetComponent<TMP_Text>().text = "#";
+                    boradText.GetChild(i).GetChild(3).GetComponent<TMP_Text>().text = "0";
                 }
             }
         }
@@ -105,7 +175,7 @@ public class LeaderBoardBrain : MonoBehaviour
         {
             Debug.Log(www.error);
         }
-    }
+    }*/
 }
 
 
@@ -113,13 +183,9 @@ public class LeaderBoardBrain : MonoBehaviour
 public class User
 {
     public string name;
-    public string id;
-    public int group;
+    public string id;    
     public string email;
-    public float time;
+    public string group;
+    public string time;
 }
-[System.Serializable]
-public class Scores
-{
-    public User[] users;
-}
+
