@@ -44,7 +44,7 @@ public class LeaderBoardBrain : MonoBehaviour
 
         document = web.Load(URL + round);// + round.ToString());
 
-        for (int i = 1; i <= 20; i++)
+        for (int i = 1; i <= boradText.childCount; i++)
         {
             try
             {
@@ -57,13 +57,6 @@ public class LeaderBoardBrain : MonoBehaviour
                 user.time = document.DocumentNode.SelectNodes("//table/tbody/tr[" + i + "]/td[5]").First().InnerText;
 
                 scores.Add(user);
-                /*
-                Debug.Log(user.name);
-                Debug.Log(user.id);
-                Debug.Log(user.email);
-                Debug.Log(user.group);
-                Debug.Log(user.time);
-                print("------------------------");*/
             }
             catch (System.Exception)
             {
@@ -72,8 +65,19 @@ public class LeaderBoardBrain : MonoBehaviour
         }
         return scores;
     }
-    float TimeToPoints(float time)
+    float TimeToPoints(string time_)
     {
+        List<string> timeList = time_.Split(':').ToList();
+
+        float dec = float.Parse(timeList[2]) * 0.01f;
+        float sec = float.Parse(timeList[1]);
+        float min = float.Parse(timeList[0]) * 60;
+
+        float time = min + sec + dec;
+        print(min + " : " + sec + " : " + dec);
+        print(time);
+        print("-----------------------");
+
         float points;
         float Vel = trackMeters / time;
 
@@ -86,25 +90,27 @@ public class LeaderBoardBrain : MonoBehaviour
     }
     void ShowScores(List<User> users_)
     {
-        //int points_;
+        int points_;
         for (int i = 0; i < boradText.childCount; i++)
         {
             if (i < users_.Count)
             {
-                //points_ = (int)TimeToPoints(i < scores.users.time);
+                points_ = (int)TimeToPoints(users_[i].time);
                 //Debug.Log(scoresToShow[i].name + " | " + points_);
 
                 boradText.GetChild(i).GetChild(0).GetComponent<TMP_Text>().text = (i + 1).ToString() + ".";
                 boradText.GetChild(i).GetChild(1).GetComponent<TMP_Text>().text = users_[i].name;
                 boradText.GetChild(i).GetChild(2).GetComponent<TMP_Text>().text = "#" + users_[i].id;
-                boradText.GetChild(i).GetChild(3).GetComponent<TMP_Text>().text = users_[i].time;
+                boradText.GetChild(i).GetChild(3).GetComponent<TMP_Text>().text = points_.ToString();
+                boradText.GetChild(i).GetChild(4).GetComponent<TMP_Text>().text = users_[i].time;
             }
             else
             {
                 boradText.GetChild(i).GetChild(0).GetComponent<TMP_Text>().text = (i + 1).ToString() + "."; ;
-                boradText.GetChild(i).GetChild(1).GetComponent<TMP_Text>().text = "----";
+                boradText.GetChild(i).GetChild(1).GetComponent<TMP_Text>().text = "--------";
                 boradText.GetChild(i).GetChild(2).GetComponent<TMP_Text>().text = "-";
                 boradText.GetChild(i).GetChild(3).GetComponent<TMP_Text>().text = "-";
+                boradText.GetChild(i).GetChild(4).GetComponent<TMP_Text>().text = "--:--:--";
             }
         }
     }
